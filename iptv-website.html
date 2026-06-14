@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamVibe IPTV</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #12121a;
+  --bg3: #1a1a26;
+  --accent: #e50914;
+  --accent2: #ff6b35;
+  --text: #ffffff;
+  --text2: #aaaacc;
+  --border: rgba(255,255,255,0.08);
+  --card: #16161f;
+  --radius: 10px;
+  --sidebar: 240px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── NAV ── */
+#public-nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,15,0.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;display:flex;align-items:center;gap:2rem;height:60px;
+}
+.logo{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,#e50914,#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:0.2rem;flex:1;}
+.nav-links a{padding:6px 14px;border-radius:6px;color:var(--text2);text-decoration:none;font-size:0.9rem;transition:all .2s;cursor:pointer;}
+.nav-links a:hover,.nav-links a.active{color:#fff;background:rgba(229,9,20,0.15);}
+.nav-right{display:flex;gap:10px;align-items:center;}
+.btn{padding:7px 18px;border-radius:6px;font-size:0.85rem;cursor:pointer;font-weight:600;border:none;transition:all .2s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:#c20812;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.3);color:#fff;}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;}
+.search-box input{background:none;border:none;color:#fff;outline:none;font-size:0.85rem;width:160px;}
+.search-box svg{opacity:.5;}
+
+/* ── PAGES ── */
+.page{display:none;animation:fadeIn .3s;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO ── */
+.hero{position:relative;height:420px;display:flex;align-items:flex-end;padding:2.5rem;overflow:hidden;background:linear-gradient(135deg,#0a0a0f 0%,#1a0510 50%,#0a0a1a 100%);}
+.hero-bg{position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400"><defs><radialGradient id="g" cx="30%" cy="50%"><stop offset="0%" stop-color="%23e50914" stop-opacity="0.3"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs><rect fill="url(%23g)" width="800" height="400"/></svg>') no-repeat center/cover;}
+.hero-content{position:relative;z-index:2;max-width:600px;}
+.hero-badge{display:inline-block;background:rgba(229,9,20,0.2);border:1px solid rgba(229,9,20,0.4);color:#ff6b6b;font-size:0.75rem;font-weight:700;letter-spacing:1px;padding:4px 12px;border-radius:20px;margin-bottom:1rem;text-transform:uppercase;}
+.hero h1{font-size:2.8rem;font-weight:800;line-height:1.1;margin-bottom:1rem;}
+.hero h1 span{color:var(--accent);}
+.hero p{color:var(--text2);font-size:1rem;margin-bottom:1.5rem;line-height:1.6;}
+.hero-btns{display:flex;gap:12px;}
+.btn-lg{padding:12px 28px;font-size:1rem;border-radius:8px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-watch{background:var(--accent);color:#fff;}
+.btn-watch:hover{background:#c20812;transform:translateY(-1px);}
+.btn-browse{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);}
+.btn-browse:hover{background:rgba(255,255,255,0.18);}
+
+/* ── AD BANNER ── */
+.ad-banner{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:1.5rem 2rem;text-align:center;color:var(--text2);font-size:0.8rem;position:relative;overflow:hidden;}
+.ad-banner::before{content:'AD';position:absolute;top:6px;right:10px;font-size:0.65rem;background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;}
+.ad-content{min-height:90px;display:flex;align-items:center;justify-content:center;}
+/* Moneytag placeholder — replace with real script */
+.moneytag-slot{width:728px;max-width:100%;height:90px;background:linear-gradient(135deg,rgba(229,9,20,0.1),rgba(255,107,53,0.1));border:1px dashed rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text2);}
+
+/* ── SECTION ── */
+.section{padding:1.5rem 2rem;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;}
+.section-title{font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:10px;}
+.section-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.see-all{font-size:0.8rem;color:var(--accent);text-decoration:none;cursor:pointer;font-weight:600;}
+.see-all:hover{text-decoration:underline;}
+
+/* ── CHANNEL GRID ── */
+.channel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;}
+.channel-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .25s;position:relative;}
+.channel-card:hover{transform:translateY(-4px);border-color:rgba(229,9,20,0.4);box-shadow:0 8px 30px rgba(229,9,20,0.15);}
+.channel-thumb{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative;}
+.live-badge{position:absolute;top:8px;left:8px;background:#e50914;color:#fff;font-size:0.6rem;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.5px;}
+.channel-info{padding:10px;}
+.channel-name{font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.channel-cat{font-size:0.72rem;color:var(--text2);margin-top:2px;}
+.channel-status{width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:5px;}
+
+/* ── PLAYER MODAL ── */
+#player-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;padding:2rem;}
+#player-modal.open{display:flex;}
+.player-wrap{background:var(--bg2);border-radius:14px;width:900px;max-width:100%;overflow:hidden;border:1px solid var(--border);}
+.player-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.player-header h3{font-size:1rem;font-weight:700;}
+.close-btn{background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+.close-btn:hover{background:rgba(229,9,20,0.4);}
+.player-body{position:relative;background:#000;}
+video,iframe.player-frame{width:100%;aspect-ratio:16/9;border:none;display:block;}
+.player-ad{padding:10px 18px;background:var(--bg3);text-align:center;font-size:0.75rem;color:var(--text2);}
+.moneytag-inline{height:60px;background:linear-gradient(135deg,rgba(229,9,20,0.08),rgba(255,107,53,0.08));border:1px dashed rgba(255,255,255,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+
+/* ══════════════════════════════
+   ADMIN PANEL
+══════════════════════════════ */
+#admin-shell{display:none;min-height:100vh;background:var(--bg);}
+#admin-shell.active{display:flex;}
+.admin-sidebar{width:var(--sidebar);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:200;}
+.sidebar-logo{padding:20px;border-bottom:1px solid var(--border);}
+.sidebar-logo .logo{font-size:1.1rem;}
+.sidebar-logo p{font-size:0.7rem;color:var(--text2);margin-top:2px;}
+.sidebar-nav{flex:1;padding:12px 10px;overflow-y:auto;}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--text2);text-decoration:none;font-size:0.87rem;cursor:pointer;margin-bottom:2px;transition:all .2s;}
+.sidebar-nav a:hover{background:rgba(255,255,255,0.06);color:#fff;}
+.sidebar-nav a.active{background:rgba(229,9,20,0.15);color:#ff6b6b;font-weight:600;}
+.sidebar-nav a svg,.sidebar-nav a .icon{width:18px;height:18px;flex-shrink:0;opacity:.8;}
+.sidebar-section-label{font-size:0.68rem;font-weight:700;letter-spacing:.8px;color:var(--text2);padding:14px 12px 6px;text-transform:uppercase;opacity:.6;}
+.sidebar-bottom{padding:12px;border-top:1px solid var(--border);}
+.admin-profile-mini{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:8px;cursor:pointer;}
+.admin-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#e50914,#ff6b35);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;}
+.admin-name{font-size:0.82rem;font-weight:600;}
+.admin-role{font-size:0.7rem;color:var(--text2);}
+
+.admin-main{margin-left:var(--sidebar);flex:1;padding:2rem;}
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;}
+.admin-page-title{font-size:1.5rem;font-weight:800;}
+.admin-page-title span{display:block;font-size:0.82rem;font-weight:400;color:var(--text2);margin-top:2px;}
+
+/* ── ADMIN PAGES ── */
+.admin-page{display:none;}
+.admin-page.active{display:block;animation:fadeIn .3s;}
+
+/* Dashboard stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:2rem;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem 1.5rem;}
+.stat-label{font-size:0.78rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.stat-value{font-size:2rem;font-weight:800;margin:6px 0 4px;line-height:1;}
+.stat-change{font-size:0.78rem;}
+.up{color:#22c55e;} .down{color:#ef4444;}
+.stat-icon{float:right;font-size:2rem;opacity:.15;}
+
+.admin-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.admin-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;}
+.admin-card-title{font-size:0.95rem;font-weight:700;margin-bottom:1.2rem;display:flex;align-items:center;justify-content:space-between;}
+
+/* Tables */
+.admin-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+.admin-table th{text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.admin-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.admin-table tr:hover td{background:rgba(255,255,255,0.02);}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;}
+.badge-green{background:rgba(34,197,94,0.15);color:#4ade80;}
+.badge-red{background:rgba(239,68,68,0.15);color:#f87171;}
+.badge-yellow{background:rgba(234,179,8,0.15);color:#facc15;}
+.badge-blue{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.action-btn{background:rgba(255,255,255,0.06);border:none;color:var(--text2);padding:5px 10px;border-radius:5px;cursor:pointer;font-size:0.78rem;transition:all .15s;}
+.action-btn:hover{background:rgba(229,9,20,0.2);color:#ff6b6b;}
+
+/* Forms */
+.form-group{margin-bottom:1.2rem;}
+.form-label{display:block;font-size:0.8rem;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+.form-control{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:#fff;font-size:0.9rem;outline:none;transition:border .2s;}
+.form-control:focus{border-color:rgba(229,9,20,0.5);}
+.form-control::placeholder{color:var(--text2);opacity:.6;}
+textarea.form-control{resize:vertical;min-height:80px;}
+select.form-control option{background:#1a1a26;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+
+/* Upload area */
+.upload-area{border:2px dashed var(--border);border-radius:var(--radius);padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s;}
+.upload-area:hover,.upload-area.dragover{border-color:rgba(229,9,20,0.5);background:rgba(229,9,20,0.04);}
+.upload-icon{font-size:2.5rem;margin-bottom:0.8rem;opacity:.4;}
+.upload-area p{color:var(--text2);font-size:0.88rem;}
+.upload-area strong{color:var(--accent);}
+#m3u8-file-input{display:none;}
+
+/* Progress / scan results */
+.scan-progress{background:var(--bg3);border-radius:8px;padding:14px;margin-top:1rem;display:none;}
+.progress-bar-wrap{background:rgba(255,255,255,0.08);border-radius:20px;height:6px;margin:10px 0;}
+.progress-bar{height:6px;border-radius:20px;background:linear-gradient(90deg,#e50914,#ff6b35);width:0%;transition:width .3s;}
+.scan-log{max-height:160px;overflow-y:auto;font-size:0.75rem;color:var(--text2);font-family:monospace;margin-top:10px;padding:10px;background:rgba(0,0,0,.3);border-radius:6px;}
+
+/* Ads settings */
+.ad-slot-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;margin-bottom:1rem;}
+.ad-slot-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.ad-slot-name{font-size:0.9rem;font-weight:600;}
+.toggle{position:relative;width:44px;height:24px;}
+.toggle input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,.15);border-radius:20px;cursor:pointer;transition:.3s;}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.3s;}
+.toggle input:checked+.toggle-slider{background:var(--accent);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(20px);}
+.revenue-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:1rem;}
+.rev-item{background:rgba(0,0,0,.3);border-radius:6px;padding:10px;text-align:center;}
+.rev-label{font-size:0.68rem;color:var(--text2);margin-bottom:4px;}
+.rev-value{font-size:1rem;font-weight:700;}
+
+/* Profile page */
+.profile-card{max-width:600px;}
+.profile-avatar-section{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.profile-avatar-big{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#e50914,#ff6b35);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2rem;flex-shrink:0;}
+.profile-avatar-info h3{font-size:1.1rem;font-weight:700;}
+.profile-avatar-info p{font-size:0.82rem;color:var(--text2);margin-top:3px;}
+.change-photo-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:7px 16px;border-radius:6px;cursor:pointer;font-size:0.82rem;margin-top:8px;transition:all .2s;}
+.change-photo-btn:hover{border-color:rgba(229,9,20,.5);color:var(--accent);}
+
+/* Chart bars (simple) */
+.mini-chart{display:flex;align-items:flex-end;gap:5px;height:60px;margin-top:1rem;}
+.bar{flex:1;background:linear-gradient(180deg,rgba(229,9,20,.6),rgba(229,9,20,.2));border-radius:3px 3px 0 0;transition:.3s;}
+.bar:hover{background:var(--accent);}
+
+/* Playlist management */
+.playlist-tabs{display:flex;gap:8px;margin-bottom:1.5rem;}
+.ptab{padding:8px 18px;border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:600;border:1px solid var(--border);color:var(--text2);background:none;transition:all .2s;}
+.ptab.active{background:rgba(229,9,20,.15);color:#ff6b6b;border-color:rgba(229,9,20,.4);}
+
+/* responsive mini */
+@media(max-width:768px){
+  .hero h1{font-size:1.8rem;}
+  .channel-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+  .admin-sidebar{width:60px;}
+  .admin-sidebar .sidebar-label, .admin-sidebar .admin-name, .admin-sidebar .admin-role, .sidebar-section-label, .sidebar-logo p{display:none;}
+  .admin-main{margin-left:60px;padding:1rem;}
+  .form-row{grid-template-columns:1fr;}
+  .admin-grid-2{grid-template-columns:1fr;}
+}
+
+/* notification */
+.notif{position:fixed;bottom:24px;right:24px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 20px;font-size:0.87rem;z-index:1000;animation:slideUp .3s;max-width:320px;}
+.notif.success{border-left:4px solid #22c55e;}
+.notif.error{border-left:4px solid #ef4444;}
+.notif.info{border-left:4px solid #3b82f6;}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- ══════════ PUBLIC SITE ══════════ -->
+<div id="public-site">
+  <nav id="public-nav">
+    <div class="logo">StreamVibe</div>
+    <div class="nav-links">
+      <a class="active" onclick="showPublicPage('home')">Home</a>
+      <a onclick="showPublicPage('news')">📺 News</a>
+      <a onclick="showPublicPage('sports')">⚽ Sports</a>
+      <a onclick="showPublicPage('cartoons')">🎨 Cartoons</a>
+      <a onclick="showPublicPage('movies')">🎬 Movies</a>
+      <a onclick="showPublicPage('drama')">🎭 Drama</a>
+    </div>
+    <div class="nav-right">
+      <div class="search-box">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search-input" placeholder="Search channels…" oninput="filterChannels(this.value)">
+      </div>
+      <button class="btn btn-ghost" onclick="openAdmin()">Admin</button>
+    </div>
+  </nav>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <div class="hero-badge">🔴 Live Now</div>
+        <h1>Watch <span>Live TV</span><br>Anywhere, Anytime</h1>
+        <p>100s of channels — news, sports, movies, cartoons & more. Stream instantly in HD with no buffering.</p>
+        <div class="hero-btns">
+          <button class="btn-lg btn-watch" onclick="playChannel('News 24','https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8','News')">▶ Watch Now</button>
+          <button class="btn-lg btn-browse" onclick="showPublicPage('sports')">Browse All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top ad banner (Moneytag) -->
+    <div class="ad-banner">
+      <div class="ad-content">
+        <div class="moneytag-slot" id="moneytag-top">
+          <!-- Replace this div with your Moneytag ad code -->
+          <span>📢 Moneytag Banner Ad (728×90) — Paste your Moneytag script here</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="home-channels">
+      <div class="section-header">
+        <div class="section-title"><span class="section-icon" style="background:rgba(239,68,68,.2);">📺</span> Featured Channels</div>
+        <a class="see-all" onclick="showPublicPage('all')">See all →</a>
+      </div>
+      <div class="channel-grid" id="featured-grid"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title"><span class="section-icon" style="background:rgba(34,197,94,.2);">⚽</span> Sports</div>
+        <a class="see-all" onclick="showPublicPage('sports')">See all →</a>
+      </div>
+      <div class="channel-grid" id="home-sports-grid"></div>
+    </div>
+
+    <!-- Mid-page ad -->
+    <div class="ad-banner" style="margin:0 2rem 1.5rem;">
+      <div class="ad-content">
+        <div class="moneytag-slot" id="moneytag-mid">
+          <!-- Moneytag mid-page ad -->
+          <span>📢 Moneytag In-Content Ad — Paste your Moneytag script here</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title"><span class="section-icon" style="background:rgba(168,85,247,.2);">🎬</span> Movies</div>
+        <a class="see-all" onclick="showPublicPage('movies')">See all →</a>
+      </div>
+      <div class="channel-grid" id="home-movies-grid"></div>
+    </div>
+  </div>
+
+  <!-- CATEGORY PAGES -->
+  <div class="page" id="page-news">
+    <div class="section">
+      <div class="section-header"><div class="section-title">📺 News Channels</div></div>
+      <div class="channel-grid" id="news-grid"></div>
+    </div>
+  </div>
+  <div class="page" id="page-sports">
+    <div class="section">
+      <div class="section-header"><div class="section-title">⚽ Sports Channels</div></div>
+      <div class="channel-grid" id="sports-grid"></div>
+    </div>
+  </div>
+  <div class="page" id="page-cartoons">
+    <div class="section">
+      <div class="section-header"><div class="section-title">🎨 Cartoon Channels</div></div>
+      <div class="channel-grid" id="cartoons-grid"></div>
+    </div>
+  </div>
+  <div class="page" id="page-movies">
+    <div class="section">
+      <div class="section-header"><div class="section-title">🎬 Movie Channels</div></div>
+      <div class="channel-grid" id="movies-grid"></div>
+    </div>
+  </div>
+  <div class="page" id="page-drama">
+    <div class="section">
+      <div class="section-header"><div class="section-title">🎭 Drama Channels</div></div>
+      <div class="channel-grid" id="drama-grid"></div>
+    </div>
+  </div>
+  <div class="page" id="page-all">
+    <div class="ad-banner" style="margin:1.5rem 2rem .5rem;">
+      <div class="ad-content"><div class="moneytag-slot" id="moneytag-all"><span>📢 Moneytag Ad</span></div></div>
+    </div>
+    <div class="section">
+      <div class="section-header"><div class="section-title">📡 All Channels</div><span id="channel-count" style="font-size:.8rem;color:var(--text2);"></span></div>
+      <div class="channel-grid" id="all-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER MODAL -->
+<div id="player-modal">
+  <div class="player-wrap">
+    <div class="player-header">
+      <h3 id="player-title">Channel</h3>
+      <button class="close-btn" onclick="closePlayer()">✕</button>
+    </div>
+    <div class="player-body">
+      <video id="hls-player" controls autoplay style="width:100%;aspect-ratio:16/9;background:#000;"></video>
+    </div>
+    <div class="player-ad">
+      <div class="moneytag-inline" id="moneytag-player">
+        📢 Moneytag In-Stream Ad — Paste your Moneytag script here
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ADMIN PANEL ══════════ -->
+<div id="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">
+      <div class="logo">StreamVibe</div>
+      <p>Admin Panel</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Main</div>
+      <a onclick="showAdminPage('dashboard')" class="active" id="anav-dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+      <a onclick="showAdminPage('playlist')" id="anav-playlist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <span class="sidebar-label">Playlist</span>
+      </a>
+      <a onclick="showAdminPage('channels')" id="anav-channels">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>
+        <span class="sidebar-label">Channels</span>
+      </a>
+      <div class="sidebar-section-label">Monetization</div>
+      <a onclick="showAdminPage('ads')" id="anav-ads">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span class="sidebar-label">Ads (Moneytag)</span>
+      </a>
+      <a onclick="showAdminPage('revenue')" id="anav-revenue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span class="sidebar-label">Revenue</span>
+      </a>
+      <div class="sidebar-section-label">Settings</div>
+      <a onclick="showAdminPage('profile')" id="anav-profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="sidebar-label">Profile</span>
+      </a>
+      <a onclick="closeAdmin()" style="margin-top:auto;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span class="sidebar-label">Back to Site</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="admin-profile-mini" onclick="showAdminPage('profile')">
+        <div class="admin-avatar" id="sidebar-avatar-letter">A</div>
+        <div>
+          <div class="admin-name" id="sidebar-admin-name">Admin</div>
+          <div class="admin-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <!-- DASHBOARD -->
+    <div class="admin-page active" id="apage-dashboard">
+      <div class="admin-topbar">
+        <div class="admin-page-title">Dashboard <span>Welcome back! Here's what's happening.</span></div>
+        <button class="btn btn-primary" style="font-size:.82rem;" onclick="showAdminPage('playlist')">+ Add Channels</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-icon">📡</span>
+          <div class="stat-label">Total Channels</div>
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-change up">+12 this week</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🟢</span>
+          <div class="stat-label">Active / Online</div>
+          <div class="stat-value" id="stat-active">0</div>
+          <div class="stat-change up">All streams healthy</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">👁️</span>
+          <div class="stat-label">Live Viewers</div>
+          <div class="stat-value">2,481</div>
+          <div class="stat-change up">↑ 14% today</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">💰</span>
+          <div class="stat-label">Ad Revenue (Today)</div>
+          <div class="stat-value">$47.20</div>
+          <div class="stat-change up">↑ 8% vs yesterday</div>
+        </div>
+      </div>
+      <div class="admin-grid-2">
+        <div class="admin-card">
+          <div class="admin-card-title">Recent Channels <button class="action-btn" onclick="showAdminPage('channels')">View All</button></div>
+          <table class="admin-table">
+            <thead><tr><th>Channel</th><th>Category</th><th>Status</th></tr></thead>
+            <tbody id="dashboard-recent-channels"></tbody>
+          </table>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-title">Viewer Stats (7 days)</div>
+          <div class="mini-chart" id="viewer-chart"></div>
+          <div style="margin-top:.8rem;font-size:.78rem;color:var(--text2);">Peak: 3,200 viewers on Wednesday</div>
+          <div style="margin-top:1.2rem;">
+            <div style="font-size:.85rem;font-weight:600;margin-bottom:.8rem;">Traffic by Category</div>
+            <div id="cat-breakdown"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYLIST MANAGEMENT -->
+    <div class="admin-page" id="apage-playlist">
+      <div class="admin-topbar">
+        <div class="admin-page-title">Playlist Manager <span>Upload M3U8 file or paste URL to auto-scan channels</span></div>
+      </div>
+      <div class="playlist-tabs">
+        <button class="ptab active" onclick="switchPlaylistTab('upload',this)">📁 Upload File</button>
+        <button class="ptab" onclick="switchPlaylistTab('url',this)">🔗 Paste URL</button>
+        <button class="ptab" onclick="switchPlaylistTab('manual',this)">✏️ Add Manual</button>
+      </div>
+
+      <!-- Upload tab -->
+      <div id="ptab-upload">
+        <div class="admin-card" style="margin-bottom:1.5rem;">
+          <div class="upload-area" id="upload-drop" onclick="document.getElementById('m3u8-file-input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleM3U8Drop(event)">
+            <div class="upload-icon">📂</div>
+            <p><strong>Click to upload</strong> or drag & drop your M3U8 file</p>
+            <p style="margin-top:6px;font-size:.75rem;opacity:.6;">Supports .m3u8, .m3u — System will auto-scan & verify active streams</p>
+          </div>
+          <input type="file" id="m3u8-file-input" accept=".m3u8,.m3u" onchange="handleM3U8File(this.files[0])">
+          <div class="scan-progress" id="scan-progress">
+            <div style="display:flex;justify-content:space-between;font-size:.82rem;">
+              <span id="scan-status">Scanning channels…</span>
+              <span id="scan-count">0/0</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar" id="scan-bar"></div></div>
+            <div class="scan-log" id="scan-log"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- URL tab -->
+      <div id="ptab-url" style="display:none;">
+        <div class="admin-card" style="margin-bottom:1.5rem;">
+          <div class="form-group">
+            <label class="form-label">M3U8 Playlist URL</label>
+            <input type="url" class="form-control" id="m3u8-url-input" placeholder="https://example.com/playlist.m3u8">
+          </div>
+          <button class="btn btn-primary" onclick="loadM3U8FromURL()">🔍 Scan & Import</button>
+          <div class="scan-progress" id="scan-progress-url">
+            <div style="display:flex;justify-content:space-between;font-size:.82rem;">
+              <span id="scan-status-url">Fetching playlist…</span><span id="scan-count-url">0/0</span>
+            </div>
+            <div class="progress-bar-wrap"><div class="progress-bar" id="scan-bar-url"></div></div>
+            <div class="scan-log" id="scan-log-url"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manual tab -->
+      <div id="ptab-manual" style="display:none;">
+        <div class="admin-card" style="margin-bottom:1.5rem;">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Channel Name</label><input class="form-control" id="mc-name" placeholder="e.g. BBC News"></div>
+            <div class="form-group"><label class="form-label">Category</label>
+              <select class="form-control" id="mc-cat">
+                <option>News</option><option>Sports</option><option>Cartoons</option><option>Movies</option><option>Drama</option><option>Entertainment</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Stream URL (M3U8 / RTMP)</label><input class="form-control" id="mc-url" placeholder="https://example.com/stream.m3u8"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Logo URL (optional)</label><input class="form-control" id="mc-logo" placeholder="https://…/logo.png"></div>
+            <div class="form-group"><label class="form-label">Language</label><input class="form-control" id="mc-lang" placeholder="English"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="mc-desc" placeholder="Short description…"></textarea></div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="addManualChannel()">✅ Add Channel</button>
+            <button class="btn btn-ghost" onclick="clearManualForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan results / imported channels -->
+      <div class="admin-card" id="import-results-card" style="display:none;">
+        <div class="admin-card-title"><span id="import-results-title">Scanned Channels</span> <button class="action-btn" onclick="importAllActive()">✅ Import All Active</button></div>
+        <table class="admin-table">
+          <thead><tr><th>#</th><th>Channel</th><th>URL</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="scanned-channels-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CHANNELS MANAGEMENT -->
+    <div class="admin-page" id="apage-channels">
+      <div class="admin-topbar">
+        <div class="admin-page-title">Channels <span>Manage all live channels</span></div>
+        <div style="display:flex;gap:10px;">
+          <select class="form-control" id="filter-cat" style="width:140px;padding:7px 12px;" onchange="renderAdminChannels()">
+            <option value="">All Categories</option>
+            <option>News</option><option>Sports</option><option>Cartoons</option><option>Movies</option><option>Drama</option>
+          </select>
+          <button class="btn btn-primary" onclick="showAdminPage('playlist')">+ Add More</button>
+        </div>
+      </div>
+      <div class="admin-card">
+        <table class="admin-table">
+          <thead><tr><th>#</th><th>Channel</th><th>Category</th><th>Stream URL</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="admin-channels-table"></tbody>
+        </table>
+        <div style="margin-top:1rem;font-size:.8rem;color:var(--text2);" id="channel-table-count"></div>
+      </div>
+    </div>
+
+    <!-- ADS SETTINGS -->
+    <div class="admin-page" id="apage-ads">
+      <div class="admin-topbar">
+        <div class="admin-page-title">Ad Settings — Moneytag <span>Configure your Moneytag ad placements</span></div>
+      </div>
+      <div class="admin-card" style="margin-bottom:1.5rem;max-width:700px;">
+        <div class="admin-card-title">Moneytag Publisher ID</div>
+        <div class="form-group">
+          <label class="form-label">Your Moneytag Publisher / Zone ID</label>
+          <input class="form-control" id="mt-pub-id" placeholder="e.g. moneytag-pub-XXXXXXXX" value="">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Moneytag Script URL</label>
+          <input class="form-control" id="mt-script-url" placeholder="https://cdn.moneytag.com/your-script.js">
+        </div>
+        <button class="btn btn-primary" onclick="saveMoneytag()">💾 Save & Apply</button>
+        <p style="margin-top:10px;font-size:.78rem;color:var(--text2);">After saving, the script will be injected into all ad slots automatically.</p>
+      </div>
+
+      <div style="margin-bottom:1rem;font-size:.95rem;font-weight:700;">Ad Slot Configuration</div>
+
+      <div id="ad-slots-list"></div>
+    </div>
+
+    <!-- REVENUE -->
+    <div class="admin-page" id="apage-revenue">
+      <div class="admin-topbar">
+        <div class="admin-page-title">Revenue Analytics <span>Moneytag earnings overview</span></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Today</div><div class="stat-value">$47.20</div><div class="stat-change up">↑ 8%</div></div>
+        <div class="stat-card"><div class="stat-label">This Week</div><div class="stat-value">$312.80</div><div class="stat-change up">↑ 23%</div></div>
+        <div class="stat-card"><div class="stat-label">This Month</div><div class="stat-value">$1,204.60</div><div class="stat-change up">↑ 11%</div></div>
+        <div class="stat-card"><div class="stat-label">Total Earnings</div><div class="stat-value">$8,420.35</div><div class="stat-change">All time</div></div>
+      </div>
+      <div class="admin-grid-2">
+        <div class="admin-card">
+          <div class="admin-card-title">Daily Revenue (Last 7 Days)</div>
+          <div class="mini-chart" id="revenue-chart"></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-title">Ad Performance by Slot</div>
+          <table class="admin-table">
+            <thead><tr><th>Slot</th><th>Impressions</th><th>CTR</th><th>Revenue</th></tr></thead>
+            <tbody>
+              <tr><td>Top Banner</td><td>14,200</td><td>1.8%</td><td>$18.40</td></tr>
+              <tr><td>Mid-Page</td><td>9,800</td><td>2.1%</td><td>$14.60</td></tr>
+              <tr><td>Player</td><td>6,200</td><td>3.4%</td><td>$11.80</td></tr>
+              <tr><td>Sidebar</td><td>3,100</td><td>1.2%</td><td>$2.40</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="admin-page" id="apage-profile">
+      <div class="admin-topbar">
+        <div class="admin-page-title">Admin Profile <span>Manage your account</span></div>
+      </div>
+      <div class="admin-card profile-card">
+        <div class="profile-avatar-section">
+          <div class="profile-avatar-big" id="profile-avatar-letter">A</div>
+          <div class="profile-avatar-info">
+            <h3 id="profile-display-name">Admin User</h3>
+            <p id="profile-display-email">admin@streamvibe.com</p>
+            <button class="change-photo-btn">📷 Change Avatar</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="prof-name" value="Admin User"></div>
+          <div class="form-group"><label class="form-label">Username</label><input class="form-control" id="prof-username" value="admin"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="prof-email" value="admin@streamvibe.com" type="email"></div>
+          <div class="form-group"><label class="form-label">Phone</label><input class="form-control" id="prof-phone" placeholder="+880…"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Site Name</label><input class="form-control" id="prof-sitename" value="StreamVibe"></div>
+        <div class="form-group"><label class="form-label">Site Description</label><textarea class="form-control" id="prof-desc">The best free IPTV streaming service.</textarea></div>
+        <hr style="border-color:var(--border);margin:1.5rem 0;">
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:1rem;">Change Password</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Current Password</label><input class="form-control" type="password" id="prof-old-pass"></div>
+          <div class="form-group"><label class="form-label">New Password</label><input class="form-control" type="password" id="prof-new-pass"></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveProfile()">💾 Save Profile</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- HLS.JS for actual playback -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
+
+<script>
+/* ══ DATA STORE ══ */
+let channels = JSON.parse(localStorage.getItem('sv_channels') || '[]');
+let adminProfile = JSON.parse(localStorage.getItem('sv_profile') || '{"name":"Admin","email":"admin@streamvibe.com","username":"admin"}');
+let adSettings = JSON.parse(localStorage.getItem('sv_ads') || JSON.stringify({
+  pubId:'',scriptUrl:'',
+  slots:[
+    {id:'top',name:'Top Banner (728×90)',enabled:true,type:'banner'},
+    {id:'mid',name:'Mid-Page (728×90)',enabled:true,type:'banner'},
+    {id:'player',name:'Player Pre-Roll',enabled:true,type:'video'},
+    {id:'sidebar',name:'Sidebar (300×250)',enabled:false,type:'banner'}
+  ]
+}));
+
+const SAMPLE_CHANNELS = [
+  {id:1,name:'News 24',cat:'News',emoji:'📺',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:2,name:'BBC World',cat:'News',emoji:'🌍',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:3,name:'Al Jazeera',cat:'News',emoji:'🕌',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'Arabic'},
+  {id:4,name:'ESPN Sports',cat:'Sports',emoji:'⚽',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:5,name:'Sky Sports',cat:'Sports',emoji:'🏆',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:6,name:'STAR Sports',cat:'Sports',emoji:'🏏',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'Hindi'},
+  {id:7,name:'Cartoon Network',cat:'Cartoons',emoji:'🎨',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:8,name:'Nickelodeon',cat:'Cartoons',emoji:'🧸',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:9,name:'Disney Junior',cat:'Cartoons',emoji:'🐭',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:10,name:'HBO Movies',cat:'Movies',emoji:'🎬',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:11,name:'Netflix Cinema',cat:'Movies',emoji:'🎥',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:12,name:'Action Movies',cat:'Movies',emoji:'💥',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+  {id:13,name:'Star Drama',cat:'Drama',emoji:'🎭',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'Hindi'},
+  {id:14,name:'Zee Drama',cat:'Drama',emoji:'🌺',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'Hindi'},
+  {id:15,name:'Drama Zone',cat:'Drama',emoji:'🎪',url:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',status:'active',lang:'English'},
+];
+
+if(channels.length === 0){channels = SAMPLE_CHANNELS; saveChannels();}
+
+function saveChannels(){localStorage.setItem('sv_channels',JSON.stringify(channels));}
+
+/* ══ CHANNEL CARD ══ */
+const catColors = {
+  News:'rgba(59,130,246,.2)',Sports:'rgba(34,197,94,.2)',Cartoons:'rgba(168,85,247,.2)',
+  Movies:'rgba(239,68,68,.2)',Drama:'rgba(234,179,8,.2)',Entertainment:'rgba(255,107,53,.2)'
+};
+function channelCard(ch){
+  return `<div class="channel-card" onclick="playChannel('${ch.name}','${ch.url}','${ch.cat}')">
+    <div class="channel-thumb" style="background:${catColors[ch.cat]||'rgba(255,255,255,.05)'}">
+      <span style="font-size:2.4rem">${ch.emoji||'📡'}</span>
+      ${ch.status==='active'?'<div class="live-badge">LIVE</div>':''}
+    </div>
+    <div class="channel-info">
+      <div class="channel-name"><span class="channel-status"></span>${ch.name}</div>
+      <div class="channel-cat">${ch.cat} • ${ch.lang||'Multi'}</div>
+    </div>
+  </div>`;
+}
+
+function renderPublicChannels(){
+  const cats = ['News','Sports','Cartoons','Movies','Drama'];
+  cats.forEach(cat=>{
+    const grid = document.getElementById(cat.toLowerCase()+'-grid');
+    if(grid) grid.innerHTML = channels.filter(c=>c.cat===cat).map(channelCard).join('');
+  });
+  const fg = document.getElementById('featured-grid');
+  if(fg) fg.innerHTML = channels.slice(0,6).map(channelCard).join('');
+  const sg = document.getElementById('home-sports-grid');
+  if(sg) sg.innerHTML = channels.filter(c=>c.cat==='Sports').slice(0,4).map(channelCard).join('');
+  const mg = document.getElementById('home-movies-grid');
+  if(mg) mg.innerHTML = channels.filter(c=>c.cat==='Movies').slice(0,4).map(channelCard).join('');
+  const ag = document.getElementById('all-grid');
+  if(ag){ag.innerHTML = channels.map(channelCard).join('');document.getElementById('channel-count').textContent=channels.length+' channels';}
+  updateDashboardStats();
+}
+
+function filterChannels(q){
+  const ag = document.getElementById('all-grid');
+  showPublicPage('all');
+  const filtered = channels.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.cat.toLowerCase().includes(q.toLowerCase()));
+  if(ag) ag.innerHTML = filtered.map(channelCard).join('');
+  document.getElementById('channel-count').textContent = filtered.length+' results';
+}
+
+/* ══ PAGE NAVIGATION ══ */
+function showPublicPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  const pg = document.getElementById('page-'+id)||document.getElementById('page-home');
+  if(pg) pg.classList.add('active');
+  const link = document.querySelector(`.nav-links a[onclick*="'${id}'"]`);
+  if(link) link.classList.add('active');
+}
+
+/* ══ PLAYER ══ */
+let hlsInstance = null;
+function playChannel(name, url, cat){
+  document.getElementById('player-title').textContent = '🔴 LIVE — '+name;
+  const modal = document.getElementById('player-modal');
+  modal.classList.add('open');
+  const video = document.getElementById('hls-player');
+  if(hlsInstance){hlsInstance.destroy();hlsInstance=null;}
+  if(url && (url.includes('.m3u8')||url.includes('m3u8'))){
+    if(Hls.isSupported()){
+      hlsInstance = new Hls({enableWorker:true});
+      hlsInstance.loadSource(url);
+      hlsInstance.attachMedia(video);
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED,()=>video.play().catch(()=>{}));
+    } else if(video.canPlayType('application/vnd.apple.mpegurl')){
+      video.src = url;
+      video.play().catch(()=>{});
+    }
+  } else {
+    video.src = url||'';
+    video.play().catch(()=>{});
+  }
+}
+function closePlayer(){
+  document.getElementById('player-modal').classList.remove('open');
+  const v = document.getElementById('hls-player');
+  v.pause();v.src='';
+  if(hlsInstance){hlsInstance.destroy();hlsInstance=null;}
+}
+document.getElementById('player-modal').addEventListener('click',e=>{if(e.target===document.getElementById('player-modal'))closePlayer();});
+
+/* ══ ADMIN NAV ══ */
+function openAdmin(){
+  document.getElementById('public-site').style.display='none';
+  document.getElementById('admin-shell').classList.add('active');
+  updateDashboardStats();
+  renderAdminChannels();
+  renderAdSlots();
+  loadProfileForm();
+}
+function closeAdmin(){
+  document.getElementById('admin-shell').classList.remove('active');
+  document.getElementById('public-site').style.display='block';
+  renderPublicChannels();
+}
+
+function showAdminPage(id){
+  document.querySelectorAll('.admin-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-nav a').forEach(a=>a.classList.remove('active'));
+  const pg = document.getElementById('apage-'+id);
+  if(pg) pg.classList.add('active');
+  const nav = document.getElementById('anav-'+id);
+  if(nav) nav.classList.add('active');
+  if(id==='dashboard') updateDashboardStats();
+  if(id==='channels') renderAdminChannels();
+  if(id==='ads') renderAdSlots();
+  if(id==='profile') loadProfileForm();
+  if(id==='revenue') renderRevenueChart();
+}
+
+/* ══ DASHBOARD ══ */
+function updateDashboardStats(){
+  document.getElementById('stat-total').textContent = channels.length;
+  document.getElementById('stat-active').textContent = channels.filter(c=>c.status==='active').length;
+  const tbody = document.getElementById('dashboard-recent-channels');
+  if(tbody) tbody.innerHTML = channels.slice(0,6).map(c=>`
+    <tr><td>${c.emoji||'📡'} ${c.name}</td>
+    <td><span class="badge badge-blue">${c.cat}</span></td>
+    <td><span class="badge ${c.status==='active'?'badge-green':'badge-red'}">${c.status}</span></td></tr>`).join('');
+  // viewer chart
+  const vc = document.getElementById('viewer-chart');
+  if(vc){
+    const vals=[1800,2100,3200,2400,2800,2481,2600];
+    const max=Math.max(...vals);
+    vc.innerHTML = vals.map((v,i)=>`<div class="bar" style="height:${(v/max*100)}%" title="Day ${i+1}: ${v.toLocaleString()} viewers"></div>`).join('');
+  }
+  // cat breakdown
+  const cb = document.getElementById('cat-breakdown');
+  if(cb){
+    const cats=['News','Sports','Cartoons','Movies','Drama'];
+    const pcts=[28,35,12,18,7];
+    cb.innerHTML = cats.map((c,i)=>`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:.8rem;">
+        <span style="width:70px;color:var(--text2);">${c}</span>
+        <div style="flex:1;background:rgba(255,255,255,.08);border-radius:20px;height:6px;">
+          <div style="width:${pcts[i]}%;height:6px;border-radius:20px;background:var(--accent);opacity:.8;"></div>
+        </div>
+        <span style="width:30px;text-align:right;">${pcts[i]}%</span>
+      </div>`).join('');
+  }
+}
+
+function renderRevenueChart(){
+  const rc = document.getElementById('revenue-chart');
+  if(rc){
+    const vals=[38,45,52,41,47,55,47];
+    const max=Math.max(...vals);
+    rc.innerHTML = vals.map((v,i)=>`<div class="bar" style="height:${(v/max*100)}%" title="$${v}"></div>`).join('');
+  }
+}
+
+/* ══ CHANNELS TABLE ══ */
+function renderAdminChannels(){
+  const filter = document.getElementById('filter-cat')?.value||'';
+  const filtered = filter ? channels.filter(c=>c.cat===filter) : channels;
+  const tb = document.getElementById('admin-channels-table');
+  if(!tb) return;
+  tb.innerHTML = filtered.map((c,i)=>`
+    <tr>
+      <td style="color:var(--text2)">${i+1}</td>
+      <td>${c.emoji||'📡'} <strong>${c.name}</strong></td>
+      <td><span class="badge badge-blue">${c.cat}</span></td>
+      <td style="font-size:.75rem;color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.url}</td>
+      <td><span class="badge ${c.status==='active'?'badge-green':'badge-red'}">${c.status}</span></td>
+      <td>
+        <button class="action-btn" onclick="toggleChannelStatus(${c.id})">${c.status==='active'?'⏸ Disable':'▶ Enable'}</button>
+        <button class="action-btn" onclick="playChannel('${c.name}','${c.url}','${c.cat}')" style="margin:0 4px;">▶ Preview</button>
+        <button class="action-btn" style="color:#f87171;" onclick="deleteChannel(${c.id})">🗑</button>
+      </td>
+    </tr>`).join('');
+  const ct = document.getElementById('channel-table-count');
+  if(ct) ct.textContent = `Showing ${filtered.length} of ${channels.length} channels`;
+}
+
+function toggleChannelStatus(id){
+  const ch = channels.find(c=>c.id===id);
+  if(ch){ch.status = ch.status==='active'?'inactive':'active';saveChannels();renderAdminChannels();}
+}
+function deleteChannel(id){
+  if(!confirm('Delete this channel?')) return;
+  channels = channels.filter(c=>c.id!==id);
+  saveChannels();renderAdminChannels();
+  showNotif('Channel deleted','error');
+}
+
+/* ══ PLAYLIST UPLOAD / SCAN ══ */
+function switchPlaylistTab(tab, btn){
+  ['upload','url','manual'].forEach(t=>{
+    document.getElementById('ptab-'+t).style.display = t===tab?'block':'none';
+  });
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function handleM3U8Drop(e){
+  e.preventDefault();
+  document.getElementById('upload-drop').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if(file) handleM3U8File(file);
+}
+
+function handleM3U8File(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => parseM3U8(e.target.result,'upload');
+  reader.readAsText(file);
+}
+
+function loadM3U8FromURL(){
+  const url = document.getElementById('m3u8-url-input').value.trim();
+  if(!url){showNotif('Enter a valid URL','error');return;}
+  // In production, use a CORS proxy or server-side fetch
+  // Demo: parse a dummy M3U8
+  const demoM3U8 = `#EXTM3U
+#EXTINF:-1 tvg-name="Demo News" group-title="News",Demo News
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-name="Demo Sports" group-title="Sports",Demo Sports
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-name="Demo Movie" group-title="Movies",Demo Movie
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`;
+  showNotif('Loading playlist from URL…','info');
+  setTimeout(()=>parseM3U8(demoM3U8,'url'), 800);
+}
+
+function parseM3U8(content, mode='upload'){
+  const lines = content.split('\n').map(l=>l.trim()).filter(l=>l);
+  const parsed = [];
+  for(let i=0;i<lines.length;i++){
+    if(lines[i].startsWith('#EXTINF')){
+      const meta = lines[i];
+      const url = lines[i+1]&&!lines[i+1].startsWith('#') ? lines[i+1] : '';
+      if(!url) continue;
+      const nameMatch = meta.match(/,(.+)$/);
+      const groupMatch = meta.match(/group-title="([^"]+)"/);
+      const logoMatch = meta.match(/tvg-logo="([^"]+)"/);
+      const name = nameMatch ? nameMatch[1].trim() : 'Channel '+parsed.length;
+      const group = groupMatch ? groupMatch[1] : 'Entertainment';
+      const logo = logoMatch ? logoMatch[1] : '';
+      const cat = mapGroupToCategory(group);
+      parsed.push({name,cat,url,logo,status:'checking'});
+    }
+  }
+  if(parsed.length===0){showNotif('No channels found in this file','error');return;}
+  simulateScan(parsed, mode);
+}
+
+function mapGroupToCategory(g){
+  g = g.toLowerCase();
+  if(g.includes('news')||g.includes('info')) return 'News';
+  if(g.includes('sport')) return 'Sports';
+  if(g.includes('cartoon')||g.includes('kids')||g.includes('children')) return 'Cartoons';
+  if(g.includes('movie')||g.includes('film')||g.includes('cinema')) return 'Movies';
+  if(g.includes('drama')||g.includes('series')) return 'Drama';
+  return 'Entertainment';
+}
+
+function simulateScan(parsed, mode){
+  const progressEl = document.getElementById(mode==='url'?'scan-progress-url':'scan-progress');
+  const barEl = document.getElementById(mode==='url'?'scan-bar-url':'scan-bar');
+  const statusEl = document.getElementById(mode==='url'?'scan-status-url':'scan-status');
+  const countEl = document.getElementById(mode==='url'?'scan-count-url':'scan-count');
+  const logEl = document.getElementById(mode==='url'?'scan-log-url':'scan-log');
+  progressEl.style.display='block';
+  logEl.textContent='';
+  let idx=0;
+  const tick = setInterval(()=>{
+    if(idx>=parsed.length){
+      clearInterval(tick);
+      statusEl.textContent='✅ Scan complete!';
+      // randomly assign active/inactive for demo
+      parsed.forEach(c=>{c.status = Math.random()>.2?'active':'inactive';});
+      showScanResults(parsed);
+      return;
+    }
+    const ch = parsed[idx];
+    ch.status = 'active'; // demo: treat all as active
+    const pct = Math.round((idx+1)/parsed.length*100);
+    barEl.style.width=pct+'%';
+    countEl.textContent=`${idx+1}/${parsed.length}`;
+    statusEl.textContent=`Checking: ${ch.name}`;
+    logEl.textContent += `[OK] ${ch.name} — ${ch.url.substring(0,50)}…\n`;
+    logEl.scrollTop = logEl.scrollHeight;
+    idx++;
+  }, 120);
+}
+
+function showScanResults(parsed){
+  const card = document.getElementById('import-results-card');
+  const tb = document.getElementById('scanned-channels-table');
+  document.getElementById('import-results-title').textContent = `Scanned ${parsed.length} channels (${parsed.filter(c=>c.status==='active').length} active)`;
+  card.style.display='block';
+  tb.innerHTML = parsed.map((c,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td><strong>${c.name}</strong></td>
+      <td style="font-size:.73rem;color:var(--text2);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.url}</td>
+      <td><span class="badge ${c.status==='active'?'badge-green':'badge-red'}">${c.status}</span></td>
+      <td><button class="action-btn" onclick='importSingleChannel(${JSON.stringify(c)})'>+ Import</button></td>
+    </tr>`).join('');
+  window._scannedChannels = parsed;
+}
+
+function importSingleChannel(ch){
+  const emoji = {News:'📺',Sports:'⚽',Cartoons:'🎨',Movies:'🎬',Drama:'🎭',Entertainment:'🎪'}[ch.cat]||'📡';
+  const newCh = {id:Date.now(),name:ch.name,cat:ch.cat,emoji,url:ch.url,status:'active',lang:'Multi'};
+  channels.push(newCh);saveChannels();
+  showNotif(`"${ch.name}" imported!`,'success');
+}
+
+function importAllActive(){
+  const active = (window._scannedChannels||[]).filter(c=>c.status==='active');
+  active.forEach(ch=>importSingleChannel(ch));
+  updateDashboardStats();
+  showNotif(`${active.length} channels imported!`,'success');
+}
+
+/* ══ MANUAL CHANNEL ══ */
+const catEmoji = {News:'📺',Sports:'⚽',Cartoons:'🎨',Movies:'🎬',Drama:'🎭',Entertainment:'🎪'};
+function addManualChannel(){
+  const name = document.getElementById('mc-name').value.trim();
+  const url = document.getElementById('mc-url').value.trim();
+  const cat = document.getElementById('mc-cat').value;
+  if(!name||!url){showNotif('Name and URL are required','error');return;}
+  channels.push({id:Date.now(),name,cat,emoji:catEmoji[cat]||'📡',url,status:'active',lang:document.getElementById('mc-lang').value||'Multi'});
+  saveChannels();clearManualForm();updateDashboardStats();
+  showNotif(`"${name}" added!`,'success');
+}
+function clearManualForm(){['mc-name','mc-url','mc-logo','mc-lang','mc-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
+
+/* ══ ADS SETTINGS ══ */
+function renderAdSlots(){
+  const list = document.getElementById('ad-slots-list');
+  if(!list) return;
+  list.innerHTML = adSettings.slots.map(slot=>`
+    <div class="ad-slot-card">
+      <div class="ad-slot-header">
+        <div class="ad-slot-name">${slot.name}</div>
+        <label class="toggle"><input type="checkbox" ${slot.enabled?'checked':''} onchange="toggleAdSlot('${slot.id}',this.checked)"><span class="toggle-slider"></span></label>
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">Custom Code Override (optional)</label>
+        <textarea class="form-control" id="ad-code-${slot.id}" style="min-height:60px;font-size:.75rem;font-family:monospace;" placeholder="Paste Moneytag zone script here, or leave blank to use Publisher ID above">${slot.code||''}</textarea>
+      </div>
+      <div class="revenue-mini">
+        <div class="rev-item"><div class="rev-label">Today</div><div class="rev-value">$${(Math.random()*20).toFixed(2)}</div></div>
+        <div class="rev-item"><div class="rev-label">Week</div><div class="rev-value">$${(Math.random()*100+50).toFixed(2)}</div></div>
+        <div class="rev-item"><div class="rev-label">CTR</div><div class="rev-value">${(Math.random()*3+0.5).toFixed(1)}%</div></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('mt-pub-id').value = adSettings.pubId||'';
+  document.getElementById('mt-script-url').value = adSettings.scriptUrl||'';
+}
+
+function toggleAdSlot(id, val){
+  const slot = adSettings.slots.find(s=>s.id===id);
+  if(slot) slot.enabled=val;
+  saveAds();
+}
+function saveMoneytag(){
+  adSettings.pubId = document.getElementById('mt-pub-id').value.trim();
+  adSettings.scriptUrl = document.getElementById('mt-script-url').value.trim();
+  adSettings.slots.forEach(s=>{
+    const el=document.getElementById('ad-code-'+s.id);
+    if(el) s.code=el.value.trim();
+  });
+  saveAds();
+  showNotif('Ad settings saved! Moneytag applied.','success');
+  // In production: dynamically inject the Moneytag script into all ad slots
+}
+function saveAds(){localStorage.setItem('sv_ads',JSON.stringify(adSettings));}
+
+/* ══ PROFILE ══ */
+function loadProfileForm(){
+  const p = adminProfile;
+  document.getElementById('prof-name').value = p.name||'';
+  document.getElementById('prof-email').value = p.email||'';
+  document.getElementById('prof-username').value = p.username||'';
+  document.getElementById('prof-phone').value = p.phone||'';
+  document.getElementById('prof-sitename').value = p.siteName||'StreamVibe';
+  document.getElementById('prof-desc').value = p.siteDesc||'';
+  document.getElementById('profile-display-name').textContent = p.name||'Admin';
+  document.getElementById('profile-display-email').textContent = p.email||'';
+  const letter = (p.name||'A')[0].toUpperCase();
+  ['profile-avatar-letter','sidebar-avatar-letter'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent=letter;
+  });
+  document.getElementById('sidebar-admin-name').textContent = p.name||'Admin';
+}
+function saveProfile(){
+  adminProfile.name = document.getElementById('prof-name').value;
+  adminProfile.email = document.getElementById('prof-email').value;
+  adminProfile.username = document.getElementById('prof-username').value;
+  adminProfile.phone = document.getElementById('prof-phone').value;
+  adminProfile.siteName = document.getElementById('prof-sitename').value;
+  adminProfile.siteDesc = document.getElementById('prof-desc').value;
+  localStorage.setItem('sv_profile',JSON.stringify(adminProfile));
+  loadProfileForm();showNotif('Profile saved!','success');
+}
+
+/* ══ NOTIFICATIONS ══ */
+function showNotif(msg, type='info'){
+  const n = document.createElement('div');
+  n.className='notif '+type;
+  n.textContent=msg;
+  document.body.appendChild(n);
+  setTimeout(()=>n.remove(),3500);
+}
+
+/* ══ INIT ══ */
+renderPublicChannels();
+loadProfileForm();
+</script>
+</body>
+</html>
